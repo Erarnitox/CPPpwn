@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Stream.hpp"
 
 #include <string>
@@ -14,12 +15,9 @@ using buffer_t = std::vector<std::byte>;
 
 class Process;
 
-// TODO:
-Process attach(const std::string& process_name);  
-
 class Process : public Stream {
 public:
-    explicit Process(const std::string& command);
+    explicit Process(const std::string& process_name);
     explicit Process(const std::string& executable, const std::vector<std::string>& args);
 
     void send(const std::string& data) override;
@@ -40,17 +38,13 @@ public:
 
     std::optional<address_t> findSignature(const std::string& signature);
 
-    // TODO:
     void writeMemory(const address_t address, const buffer_t& buffer);
 
-    // TODO:
-    buffer_t readMemory(const address_t address);
+    buffer_t readMemory(const address_t address, size_t size);
 
-    // TODO:
-    //void loadLibrary(const std::string& path); //call dlopen()
+    void loadLibrary(const std::string& path); //call dlopen()
 
     ~Process() override;
-    friend Process attach(const std::string& process_name);  
 
 private:
     std::string process_name_;
@@ -59,7 +53,7 @@ private:
     handle_t child_stdout_;
     pid_t pid_;
     
-    address_t getBaseAddress(const std::string module_name = "");
+    address_t getBaseAddress(const std::string& module_name = "");
 };
 
 }
