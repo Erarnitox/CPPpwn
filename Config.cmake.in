@@ -4,4 +4,4 @@ include("${CMAKE_CURRENT_LIST_DIR}/cpppwnTargets.cmake")
 check_required_components(cpppwn)
 
 include(CMakeFindDependencyMacro)
-find_dependency(Threads REQUIRED)
+# find_dependency(Threads REQUIRED)

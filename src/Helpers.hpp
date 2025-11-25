@@ -7,7 +7,7 @@
 //----------------------------------------
 //
 //----------------------------------------
-static inline void copy_stdin_to_stream(cpppwn::Stream* stream, std::atomic<bool>& running) {
+static inline void copy_stdin_to_stream(cpppwn::Stream* stream, std::atomic<bool>& running) noexcept {
     std::string line;
     while (running && std::getline(std::cin, line)) {
         stream->sendline(line);
@@ -18,7 +18,7 @@ static inline void copy_stdin_to_stream(cpppwn::Stream* stream, std::atomic<bool
 //----------------------------------------
 //
 //----------------------------------------
-static inline void copy_stream_to_stdout(cpppwn::Stream* stream, std::atomic<bool>& running) {
+static inline void copy_stream_to_stdout(cpppwn::Stream* stream, std::atomic<bool>& running) noexcept {
     try {
         while (running && stream->is_alive()) {
             std::string data = stream->recvline();

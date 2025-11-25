@@ -20,21 +20,21 @@ Remote::Remote(const std::string& host, uint16_t port)
 //----------------------------------------
 //
 //----------------------------------------
-void Remote::send(const std::string& data) {
+void Remote::send(const std::string& data) noexcept {
     asio::write(socket_, asio::buffer(data));
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-void Remote::sendline(const std::string& data) {
+void Remote::sendline(const std::string& data) noexcept {
     send(data + "\n");
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-std::string Remote::recv(std::size_t size) {
+std::string Remote::recv(std::size_t size) noexcept {
     std::vector<char> buf(size);
     size_t len = asio::read(socket_, asio::buffer(buf, size));
     return std::string(buf.begin(), buf.begin() + len);
@@ -43,7 +43,7 @@ std::string Remote::recv(std::size_t size) {
 //----------------------------------------
 //
 //----------------------------------------
-std::string Remote::recvuntil(const std::string& delim) {
+std::string Remote::recvuntil(const std::string& delim) noexcept {
     asio::streambuf buf;
     asio::read_until(socket_, buf, delim);
     return std::string(asio::buffers_begin(buf.data()), asio::buffers_end(buf.data()));
@@ -52,14 +52,14 @@ std::string Remote::recvuntil(const std::string& delim) {
 //----------------------------------------
 //
 //----------------------------------------
-bool Remote::is_alive() const {
+bool Remote::is_alive() const noexcept {
     return socket_.is_open();
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-void Remote::close() {
+void Remote::close() noexcept {
     asio::error_code ec;
     socket_.close(ec);
 }
@@ -88,21 +88,21 @@ Remote::~Remote() {
 //----------------------------------------
 //
 //----------------------------------------
-int Remote::getInputStream() {
+int Remote::getInputStream() noexcept {
   return socket_.native_handle();
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-int Remote::getOutputStream() {
+int Remote::getOutputStream() noexcept {
   return socket_.native_handle(); 
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-std::string Remote::recvline() {
+std::string Remote::recvline() noexcept {
     return recvuntil("\n");
 }
 

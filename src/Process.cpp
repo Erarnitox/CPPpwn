@@ -11,8 +11,14 @@
 #include <iostream>
 #include <thread>
 
-
 namespace cpppwn {
+
+//----------------------------------------
+//
+//----------------------------------------
+Process attach(const std::string& process_name) {
+  return Process(process_name);
+}
 
 //----------------------------------------
 //
@@ -42,40 +48,41 @@ Process::Process(const std::string& command) {
 
     child_stdin_ = stdin_pipe[1];
     child_stdout_ = stdout_pipe[0];
+    process_name_ = command;
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-void Process::send(const std::string& data) {
+void Process::send(const std::string& data) noexcept {
     write(child_stdin_, data.data(), data.size());
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-void Process::sendline(const std::string& data) {
+void Process::sendline(const std::string& data) noexcept {
     send(data + "\n");
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-int Process::getInputStream() {
+int Process::getInputStream() noexcept {
   return child_stdin_;
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-int Process::getOutputStream() {
+int Process::getOutputStream() noexcept {
   return child_stdout_;
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-std::string Process::recv(std::size_t size) {
+std::string Process::recv(std::size_t size) noexcept {
     std::vector<char> buf(size);
     ssize_t n = read(child_stdout_, buf.data(), size);
     return std::string(buf.begin(), buf.begin() + (n > 0 ? n : 0));
@@ -84,7 +91,7 @@ std::string Process::recv(std::size_t size) {
 //----------------------------------------
 //
 //----------------------------------------
-std::string Process::recvuntil(const std::string& delim) {
+std::string Process::recvuntil(const std::string& delim) noexcept {
     std::string out;
     char ch;
     while (read(child_stdout_, &ch, 1) == 1) {
@@ -99,14 +106,14 @@ std::string Process::recvuntil(const std::string& delim) {
 //----------------------------------------
 //
 //----------------------------------------
-std::string Process::recvline() {
+std::string Process::recvline() noexcept {
     return recvuntil("\n");
 }
 
 //----------------------------------------
 //
 //----------------------------------------
-std::string Process::recvall() {
+std::string Process::recvall() noexcept {
     std::string result;
     std::array<char, 4096> buf;
     ssize_t n;
@@ -119,7 +126,7 @@ std::string Process::recvall() {
 //----------------------------------------
 //
 //----------------------------------------
-bool Process::is_alive() const {
+bool Process::is_alive() const noexcept {
     if (pid_ <= 0)
         return false;
 
@@ -131,7 +138,7 @@ bool Process::is_alive() const {
 //----------------------------------------
 //
 //----------------------------------------
-void Process::close() {
+void Process::close() noexcept {
     if (child_stdin_ != -1) {
         ::close(child_stdin_);
         child_stdin_ = -1;
@@ -168,6 +175,19 @@ Process::~Process() {
     if(is_alive()) {
       close();
     }
+}
+
+//----------------------------------------
+//
+//----------------------------------------
+void writeMemory(const address_t address, const buffer_t& buffer) {
+}
+
+//----------------------------------------
+//
+//----------------------------------------
+buffer_t readMemory(const address_t address) {
+  return {};
 }
 
 }
