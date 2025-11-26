@@ -8,6 +8,7 @@ add_library(cpppwn
     src/Process.cpp
     src/Server.cpp
     src/Shell.cpp
+    src/HTTPClient.cpp
 )
 
 target_compile_features(cpppwn PUBLIC cxx_std_23)

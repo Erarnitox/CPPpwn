@@ -433,6 +433,35 @@ Remote::Remote(const std::string& host, uint16_t port,
 //----------------------------------------
 //
 //----------------------------------------
+Remote::Remote(const std::string& host, uint16_t port, 
+  std::shared_ptr<asio::ssl::context> ssl_ctx): io_(), socket_(nullptr) {
+  
+  if (not ssl_ctx) {
+    throw std::invalid_argument("SSL context cannot be null");
+  }
+    
+  // Create SSL stream with custom context
+  asio::ssl::stream<asio::ip::tcp::socket> ssl_socket(io_, *ssl_ctx);
+    
+  // Set SNI hostname
+  if(not SSL_set_tlsext_host_name(ssl_socket.native_handle(), host.c_str())) {
+    throw std::runtime_error("Failed to set SNI hostname");
+  }
+    
+  // Connect to server
+  asio::ip::tcp::resolver resolver(io_);
+  auto endpoints = resolver.resolve(host, std::to_string(port));
+  asio::connect(ssl_socket.lowest_layer(), endpoints);
+    
+  // Perform TLS handshake
+  ssl_socket.handshake(asio::ssl::stream_base::client);
+    
+  socket_ = std::make_unique<TlsSocketImpl>(std::move(ssl_socket));
+}
+
+//----------------------------------------
+//
+//----------------------------------------
 void Remote::send(const std::string& data) {
   if(not socket_) {
     throw std::runtime_error("No socket available!");

@@ -1,7 +1,8 @@
 #pragma once
-#include "Stream.hpp"
 
+#include "Stream.hpp"
 #include <asio.hpp>
+#include <asio/ssl.hpp>
 #include <string>
 
 namespace cpppwn {
@@ -10,14 +11,17 @@ class Remote : public Stream {
 public:
     class SocketImpl;
 
-    Remote(const std::string& host, uint16_t port);
+    explicit Remote(const std::string& host, uint16_t port);
 
-    Remote(const std::string& host, uint16_t port, 
+    explicit Remote(const std::string& host, uint16_t port, 
         bool use_tls, bool verify_certificate = false
     );
 
-    Remote(const std::string& host, uint16_t port, 
+    explicit Remote(const std::string& host, uint16_t port, 
         const std::string& proxy, bool use_tls = false);
+
+    explicit Remote(const std::string& host, uint16_t port,
+                   std::shared_ptr<asio::ssl::context> ssl_ctx);
 
     void send(const std::string& data) override;
     void sendline(const std::string& data) override;
