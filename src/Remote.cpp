@@ -582,7 +582,21 @@ std::string Remote::recvall() {
 //
 //----------------------------------------
 void Remote::swap_socket(asio::ip::tcp::socket&& socket) {
-    socket_ = std::make_unique<TcpSocketImpl>(std::move(socket));
+  socket_ = std::make_unique<TcpSocketImpl>(std::move(socket));
+}
+
+//----------------------------------------
+//
+//----------------------------------------
+Remote::Remote(asio::ip::tcp::socket socket): io_(), socket_(nullptr) {
+  socket_ = std::make_unique<TcpSocketImpl>(std::move(socket));
+}
+
+//----------------------------------------
+//
+//----------------------------------------
+Remote::Remote(asio::ssl::stream<asio::ip::tcp::socket> ssl_socket): io_(), socket_(nullptr) {
+  socket_ = std::make_unique<TlsSocketImpl>(std::move(ssl_socket));
 }
 
 }

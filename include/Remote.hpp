@@ -23,6 +23,9 @@ public:
     explicit Remote(const std::string& host, uint16_t port,
                    std::shared_ptr<asio::ssl::context> ssl_ctx);
 
+    explicit Remote(asio::ip::tcp::socket socket);
+    explicit Remote(asio::ssl::stream<asio::ip::tcp::socket> ssl_socket);
+
     void send(const std::string& data) override;
     void sendline(const std::string& data) override;
 
@@ -47,7 +50,6 @@ public:
     Remote& operator=(const Remote&) = delete;
 
 private:
-
     asio::io_context io_;
     std::unique_ptr<SocketImpl> socket_;
 };
