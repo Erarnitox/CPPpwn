@@ -25,4 +25,11 @@ public:
 
     virtual void interactive() = 0;
 };
+
+//----------------------------------------
+// bridges streams a and b indefinitely.
+// blocks until a connection drops.
+//----------------------------------------
+void bridge(Stream& a, Stream& b);
+
 }

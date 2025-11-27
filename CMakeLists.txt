@@ -8,6 +8,7 @@ add_library(cpppwn
     src/Process.cpp
     src/Server.cpp
     src/Shell.cpp
+    src/Stream.cpp
     src/HttpClient.cpp
     src/HttpServer.cpp
     src/HttpUtils.cpp
@@ -19,6 +20,7 @@ add_library(cpppwn
     include/Process.hpp
     include/Server.hpp
     include/Shell.hpp
+    include/Stream.hpp
     include/HttpClient.hpp
     include/HttpServer.hpp
     include/HttpUtils.hpp
