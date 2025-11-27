@@ -13,7 +13,8 @@ add_library(cpppwn
     src/HttpUtils.cpp
     src/RESTClient.cpp
     src/RESTServer.cpp
-
+    src/Pattern.cpp
+    
     # includes for some IDEs
     include/Remote.hpp
     include/Process.hpp
@@ -24,6 +25,7 @@ add_library(cpppwn
     include/HttpUtils.hpp
     include/RESTClient.hpp
     include/RESTServer.hpp
+    include/Pattern.hpp
 )
 
 target_compile_features(cpppwn PUBLIC cxx_std_23)
