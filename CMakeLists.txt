@@ -24,6 +24,8 @@ add_library(cpppwn
     include/HttpUtils.hpp
     include/RESTClient.hpp
     include/RESTServer.hpp
+
+    include/cpppwn.hpp
 )
 
 target_compile_features(cpppwn PUBLIC cxx_std_23)
@@ -143,10 +145,9 @@ install(
 )
 
 # -------------------------------------
-# Optional example program
+# Optional example programs
 # -------------------------------------
 if (CPPPWN_BUILD_EXAMPLE)
-    add_executable(example example/main.cpp)
-    target_link_libraries(example PRIVATE cpppwn)
+  add_subdirectory(example)
 endif()
 

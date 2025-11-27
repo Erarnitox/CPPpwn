@@ -33,7 +33,8 @@ namespace fs = std::filesystem;
 namespace cpppwn {
 
 namespace {
-    // RAII wrapper for file descriptors
+
+// RAII wrapper for file descriptors
 class FileDescriptor {
   public:
     explicit FileDescriptor(int fd = -1) noexcept : fd_(fd) {}

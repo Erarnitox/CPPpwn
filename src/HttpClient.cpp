@@ -509,7 +509,9 @@ HttpResponse HttpClient::request(
   remote_->send(request_str);
     
   // Receive response (read until connection closes)
-  std::string response_data = remote_->recvall();
+  std::string response_data;
+  
+  response_data = remote_->recvall();
     
   if(config_.verbose) {
     std::cout << "=== Response ===\n" << response_data << "\n";

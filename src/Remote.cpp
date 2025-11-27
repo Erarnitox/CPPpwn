@@ -198,6 +198,7 @@ class Remote::SocketImpl {
     virtual size_t read_some(char* buffer, size_t size, asio::error_code& ec) = 0;
     virtual void read_until(asio::streambuf& buf, const std::string& delim) = 0;
     virtual bool is_open() const = 0;
+    virtual bool is_tls() const = 0;
     virtual void close() = 0;
     virtual int native_handle() = 0;
     virtual ~SocketImpl() = default;
@@ -252,6 +253,13 @@ class TcpSocketImpl : public Remote::SocketImpl {
     //----------------------------------------
     //
     //----------------------------------------
+    bool is_tls() const override {
+      return false;
+    }
+
+    //----------------------------------------
+    //
+    //----------------------------------------
     void close() override {
       asio::error_code ec;
       socket_.close(ec);
@@ -267,6 +275,7 @@ class TcpSocketImpl : public Remote::SocketImpl {
   private:
     asio::ip::tcp::socket socket_;
 };
+
 
 //----------------------------------------
 //
@@ -306,14 +315,21 @@ class TlsSocketImpl : public Remote::SocketImpl {
     void read_until(asio::streambuf& buf, const std::string& delim) override {
       asio::read_until(socket_, buf, delim);
     }
-    
+
     //----------------------------------------
     //
     //----------------------------------------
     bool is_open() const override {
       return socket_.lowest_layer().is_open();
     }
-    
+
+    //----------------------------------------
+    //
+    //----------------------------------------
+    bool is_tls() const override {
+      return true;
+    }
+   
     //----------------------------------------
     //
     //----------------------------------------
@@ -522,6 +538,8 @@ void Remote::close() {
 //----------------------------------------
 void Remote::interactive() {
     std::atomic<bool> running{true};
+    
+    //TODO: Doesn't work for TLS
     std::thread input_thread(copy_stdin_to_stream, this, std::ref(running));
     std::thread output_thread(copy_stream_to_stdout, this, std::ref(running));
 

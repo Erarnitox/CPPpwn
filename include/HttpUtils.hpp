@@ -104,7 +104,7 @@ struct HttpConfig {
   std::string user_agent = "cpppwn-http/1.0";   // User-Agent header (if not emulating browser)
   bool follow_redirects = true;                 // Follow HTTP redirects
   size_t max_redirects = 10;                    // Maximum number of redirects
-  bool verify_ssl = true;                       // Verify SSL certificates
+  bool verify_ssl = false;                      // Verify SSL certificates
   bool verbose = false;                         // Print request/response for debugging
   std::string proxy_url;                        // Proxy URL (empty for no proxy)
   size_t redirect_count = 0;                    // Internal redirect counter
@@ -116,20 +116,11 @@ struct HttpConfig {
   std::string referer;                             // Referer header for navigation
   bool auto_store_cookies = true;                  // Automatically store cookies
     
-  //----------------------------------------
-  //
-  //----------------------------------------
   HttpConfig() = default;
     
-  //----------------------------------------
-  //
-  //----------------------------------------
   explicit HttpConfig(std::string ua) : user_agent(std::move(ua)), send_browser_headers(false) {
   }
     
-  //----------------------------------------
-  //
-  //----------------------------------------
   explicit HttpConfig(BrowserType browser) : browser_type(browser), send_browser_headers(true) {
   }
 };
