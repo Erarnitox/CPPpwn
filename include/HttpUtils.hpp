@@ -98,31 +98,32 @@ enum class BrowserType {
 };
 
 //----------------------------------------
-//
+// HttpConfig - Configuration for HTTP client
 //----------------------------------------
 struct HttpConfig {
-  std::string user_agent = "cpppwn-http/1.0";   // User-Agent header (if not emulating browser)
-  bool follow_redirects = true;                 // Follow HTTP redirects
-  size_t max_redirects = 10;                    // Maximum number of redirects
-  bool verify_ssl = false;                      // Verify SSL certificates
-  bool verbose = false;                         // Print request/response for debugging
-  std::string proxy_url;                        // Proxy URL (empty for no proxy)
-  size_t redirect_count = 0;                    // Internal redirect counter
-    
+  std::string user_agent = "cpppwn-http/1.0";      // User-Agent header (if not emulating browser)
+  bool follow_redirects = true;                    // Follow HTTP redirects
+  size_t max_redirects = 10;                       // Maximum number of redirects
+  bool verify_ssl = false;                         // Verify SSL certificates
+  bool verbose = false;                            // Print request/response for debugging
+  std::string proxy;                               // Changed from proxy_url to proxy (libcurl uses this)
+  long timeout_ms = 30000;                         // Timeout in milliseconds (added for libcurl)
+  size_t redirect_count = 0;                       // Internal redirect counter
   BrowserType browser_type = BrowserType::Chrome;  // Browser to emulate
   bool send_browser_headers = true;                // Send realistic browser headers
   bool human_like_timing = false;                  // Add random delays to mimic humans
   bool send_dnt = false;                           // Send Do-Not-Track header
   std::string referer;                             // Referer header for navigation
   bool auto_store_cookies = true;                  // Automatically store cookies
-    
+  std::map<std::string, std::string> cookies;      // Cookie storage (added)
+  
   HttpConfig() = default;
-    
-  explicit HttpConfig(std::string ua) : user_agent(std::move(ua)), send_browser_headers(false) {
-  }
-    
-  explicit HttpConfig(BrowserType browser) : browser_type(browser), send_browser_headers(true) {
-  }
+  
+  explicit HttpConfig(std::string ua) 
+    : user_agent(std::move(ua)), send_browser_headers(false) {}
+  
+  explicit HttpConfig(BrowserType browser) 
+    : browser_type(browser), send_browser_headers(true) {}
 };
 
 //----------------------------------------
