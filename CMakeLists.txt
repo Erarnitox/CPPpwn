@@ -85,7 +85,7 @@ CPMAddPackage(
     GIT_TAG curl-8_17_0
     OPTIONS
         "CURL_USE_OPENSSL ON"
-        "CMAKE_USE_LIBSSH2 OFF"
+        "CMAKE_USE_LIBSSH2 OFF" # maybe useful for reverse shells and other traffic tunneling tricks later
         "BUILD_CURL_EXE OFF"
         "CURL_ZLIB ON"
         "BUILD_SHARED_LIBS OFF"
