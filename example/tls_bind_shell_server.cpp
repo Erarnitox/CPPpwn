@@ -14,6 +14,6 @@ int main() {
   while(true) {
     auto client = server.accept();
     std::println("New client connected!");
-    connect_shell(*client);    
+    connect_popen(*client);
   }
 }

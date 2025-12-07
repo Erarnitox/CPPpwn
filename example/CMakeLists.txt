@@ -59,17 +59,6 @@ target_link_libraries(rest_server PRIVATE cpppwn)
 add_executable(rest_client rest_client.cpp)
 target_link_libraries(rest_client PRIVATE cpppwn)
 
-########################################################
-## TODO: The things below are not working yet
-
-# TLS reverse shell
-#add_executable(tls_reverse_shell tls_reverse_shell.cpp)
-#target_link_libraries(tls_reverse_shell PRIVATE cpppwn)
-
-# TLS bind shell
-#add_executable(tls_bind_shell tls_bind_shell.cpp)
-#target_link_libraries(tls_bind_shell PRIVATE cpppwn)
-
 # TLS bind shell server
 add_executable(tls_bind_shell_server tls_bind_shell_server.cpp)
 target_link_libraries(tls_bind_shell_server PRIVATE cpppwn)
@@ -77,3 +66,15 @@ target_link_libraries(tls_bind_shell_server PRIVATE cpppwn)
 # TLS bind shell client
 add_executable(tls_bind_shell_client tls_bind_shell_client.cpp)
 target_link_libraries(tls_bind_shell_client PRIVATE cpppwn)
+
+# TLS reverse shell client
+add_executable(tls_reverse_shell_client tls_reverse_shell_client.cpp)
+target_link_libraries(tls_reverse_shell_client PRIVATE cpppwn)
+
+# TLS bind shell
+add_executable(tls_reverse_shell_server tls_reverse_shell_server.cpp)
+target_link_libraries(tls_reverse_shell_server PRIVATE cpppwn)
+
+########################################################
+## TODO: The things below are not working yet
+
