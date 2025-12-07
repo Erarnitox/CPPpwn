@@ -47,12 +47,20 @@ target_link_libraries(http_client PRIVATE cpppwn)
 add_executable(https_server https_server.cpp)
 target_link_libraries(https_server PRIVATE cpppwn)
 
-########################################################
-## TODO: The things below are not working yet
-
 # simple HTTPS client 
 add_executable(https_client https_client.cpp)
 target_link_libraries(https_client PRIVATE cpppwn)
+
+# simple HTTPS/JSON based REST server
+add_executable(rest_server rest_server.cpp)
+target_link_libraries(rest_server PRIVATE cpppwn)
+
+# simple HTTPS/JSON based REST client
+add_executable(rest_client rest_client.cpp)
+target_link_libraries(rest_client PRIVATE cpppwn)
+
+########################################################
+## TODO: The things below are not working yet
 
 # TLS reverse shell
 #add_executable(tls_reverse_shell tls_reverse_shell.cpp)
