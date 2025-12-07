@@ -5,11 +5,21 @@
 int main() {
   using namespace cpppwn;
 
+  HttpConfig config;
+  config.verbose = true;
+  config.browser_type = BrowserType::Firefox;
+  HttpClient client(config);
+  auto response = client.get("https://erarnitox.de");
+
+  std::println("Erarnitox Says: \n{}", response.body);
+
+  /*
   Process proc("/bin/bash", {"/bin/bash"});
   proc.sendline("echo 'Hello There!'");
   std::println("Output: {}", proc.recvline());
   proc.interactive();
-  
+  */
+
   /*
   HttpServer server(8080);
 

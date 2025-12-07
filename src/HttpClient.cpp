@@ -234,7 +234,7 @@ static size_t header_callback(char* buffer, size_t size, size_t nitems, void* us
 // Constructor
 //----------------------------------------
 HttpClient::HttpClient(const HttpConfig& config) 
-  : config_(config), curl_handle_(nullptr) {
+  : config_(config), curl_handle_(std::make_unique<CurlHandle>()) {
   
   // Initialize curl globally (thread-safe after first call)
   static bool curl_initialized = false;
@@ -569,7 +569,7 @@ bool HttpClient::download(const std::string& url, const std::string& output_path
     curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
     
     // Write to file
-    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, nullptr);
+    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, fp);
     
     // Follow redirects

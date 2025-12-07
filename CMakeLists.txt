@@ -87,7 +87,7 @@ CPMAddPackage(
         "CURL_USE_OPENSSL ON"
         "CMAKE_USE_LIBSSH2 OFF"
         "BUILD_CURL_EXE OFF"
-        "CURL_ZLIB OFF"
+        "CURL_ZLIB ON"
         "BUILD_SHARED_LIBS OFF"
         "BUILD_STATIC_LIBS ON"
 )
