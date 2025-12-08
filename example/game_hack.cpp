@@ -14,20 +14,11 @@ int main() {
   std::println("Games Base Address is [0x{:x}]", game_base);
   std::println("Points Address is [0x{:x}]", points_address);
 
-  auto points_value_buffer = game.readMemory(points_address, 4);
-  auto points_value = *reinterpret_cast<int*>(&(*points_value_buffer.begin()));
+  auto points_value = game.readValue<int>(points_address);
 
   std::println("Current Points: {}", points_value);
 
   // increment points
   points_value += 10000;
-
-  buffer_t hacked_value_buffer;
-  hacked_value_buffer.reserve(sizeof(points_value));
-  auto points_value_iter = reinterpret_cast<char*>(&points_value);
-
-  for(size_t i{ 0 }; i < sizeof(points_value); ++i) {
-    hacked_value_buffer.push_back(*(points_value_iter+i));
-  }
-  game.writeMemory(points_address, hacked_value_buffer);
+  game.writeValue<decltype(points_value)>(points_address, points_value);
 }

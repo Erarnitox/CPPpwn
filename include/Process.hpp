@@ -9,14 +9,34 @@
 
 namespace cpppwn {
 
+using byte_t = char;
 using handle_t = int;
 using address_t = size_t;
-using buffer_t = std::vector<char>;
-
-class Process;
+using buffer_t = std::vector<byte_t>;
 
 class Process : public Stream {
 public:
+    template <typename T>
+    T readValue(const address_t address) const {
+        auto points_value_buffer = this->readMemory(address, sizeof(T));
+        return *reinterpret_cast<T*>(&(*points_value_buffer.begin()));
+    }
+   
+    template <typename T>
+    void writeValue(const address_t address, const T& value) {
+        const auto value_size{ sizeof(value) };
+        const auto value_base_address = reinterpret_cast<const byte_t*>(&value);
+
+        buffer_t hacked_value_buffer;
+        hacked_value_buffer.reserve(value_size);
+
+        for(size_t i{ 0 }; i < value_size; ++i) {
+            hacked_value_buffer.push_back(value_base_address[i]);
+        }
+        this->writeMemory(address, hacked_value_buffer);
+    }
+
+
     explicit Process(const std::string& process_name);
     explicit Process(const std::string& executable, const std::vector<std::string>& args);
 
@@ -36,16 +56,16 @@ public:
 
     void interactive() override;
 
-    std::optional<address_t> findSignature(const std::string& signature);
+    std::optional<address_t> findSignature(const std::string& signature) const;
 
     void writeMemory(const address_t address, const buffer_t& buffer);
 
-    buffer_t readMemory(const address_t address, size_t size);
+    buffer_t readMemory(const address_t address, size_t size) const;
 
     void loadLibrary(const std::string& path); //call dlopen()
 
-    address_t getBaseAddress(const std::string& module_name = "");
-    
+    address_t getBaseAddress(const std::string& module_name = "") const;
+
     ~Process() override;
 
 private:

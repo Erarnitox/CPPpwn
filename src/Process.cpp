@@ -505,7 +505,7 @@ Process::~Process() {
 //----------------------------------------
 // Find signature/pattern in process memory
 //----------------------------------------
-std::optional<address_t> Process::findSignature(const std::string& signature) {
+std::optional<address_t> Process::findSignature(const std::string& signature) const {
   if(pid_ < 1) {
     throw std::runtime_error("No valid process");
   }
@@ -592,7 +592,7 @@ void Process::writeMemory(const address_t address, const buffer_t& buffer) {
 //----------------------------------------
 // Read from process memory
 //----------------------------------------
-buffer_t Process::readMemory(const address_t address, size_t size) {
+buffer_t Process::readMemory(const address_t address, size_t size) const {
   if(pid_ < 1) {
     throw std::runtime_error("No valid process");
   }
@@ -619,7 +619,7 @@ buffer_t Process::readMemory(const address_t address, size_t size) {
 //----------------------------------------
 // Get base address of a module
 //----------------------------------------
-address_t Process::getBaseAddress(const std::string& module_name) {
+address_t Process::getBaseAddress(const std::string& module_name) const {
   if(pid_ < 1) {
     throw std::runtime_error("No valid process");
   }
