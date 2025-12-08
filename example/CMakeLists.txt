@@ -75,6 +75,8 @@ target_link_libraries(tls_reverse_shell_client PRIVATE cpppwn)
 add_executable(tls_reverse_shell_server tls_reverse_shell_server.cpp)
 target_link_libraries(tls_reverse_shell_server PRIVATE cpppwn)
 
-########################################################
-## TODO: The things below are not working yet
-
+# Simple Game hack
+add_executable(simple_game simple_game.cpp)
+target_compile_features(simple_game PRIVATE cxx_std_23)
+add_executable(game_hack game_hack.cpp)
+target_link_libraries(game_hack PRIVATE cpppwn)

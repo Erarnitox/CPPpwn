@@ -11,7 +11,7 @@ namespace cpppwn {
 
 using handle_t = int;
 using address_t = size_t;
-using buffer_t = std::vector<std::byte>;
+using buffer_t = std::vector<char>;
 
 class Process;
 
@@ -44,6 +44,8 @@ public:
 
     void loadLibrary(const std::string& path); //call dlopen()
 
+    address_t getBaseAddress(const std::string& module_name = "");
+    
     ~Process() override;
 
 private:
@@ -52,8 +54,6 @@ private:
     handle_t child_stdin_;
     handle_t child_stdout_;
     pid_t pid_;
-    
-    address_t getBaseAddress(const std::string& module_name = "");
 };
 
 }
