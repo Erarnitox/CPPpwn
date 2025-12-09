@@ -26,6 +26,7 @@ add_library(cpppwn STATIC
     "include/RESTServer.hpp"
     "include/cpppwn.hpp"
 )
+add_library(cpppwn::cpppwn ALIAS cpppwn)
 
 target_compile_features(cpppwn PUBLIC cxx_std_23)
 
