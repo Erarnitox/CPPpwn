@@ -50,7 +50,7 @@ public:
     server_.get(path, [handler](const HttpRequest& req) {
       try {
         TResponse response = handler(req);
-        std::string json = glz::write_json(response);
+        std::string json = glz::write_json(response).value_or("{}");
         return HttpResponse().set_json(json);
       } catch (const std::exception& e) {
         return HttpResponse(500).set_json(R"({"error":")" + std::string(e.what()) + R"("})");
@@ -69,7 +69,7 @@ public:
         }
 
         TResponse response = handler(req, request_data);
-        std::string json = glz::write_json(response);
+        std::string json = glz::write_json(response).value_or("{}");
         return HttpResponse(201).set_json(json);
       } catch (const std::exception& e) {
         return HttpResponse(500).set_json(R"({"error":")" + std::string(e.what()) + R"("})");
@@ -88,7 +88,7 @@ public:
         }
 
         TResponse response = handler(req, request_data);
-        std::string json = glz::write_json(response);
+        std::string json = glz::write_json(response).value_or("{}");
         return HttpResponse().set_json(json);
       } catch (const std::exception& e) {
         return HttpResponse(500).set_json(R"({"error":")" + std::string(e.what()) + R"("})");
@@ -107,7 +107,7 @@ public:
         }
 
         TResponse response = handler(req, request_data);
-        std::string json = glz::write_json(response);
+        std::string json = glz::write_json(response).value_or("{}");
         return HttpResponse().set_json(json);
       } catch (const std::exception& e) {
         return HttpResponse(500).set_json(R"({"error":")" + std::string(e.what()) + R"("})");

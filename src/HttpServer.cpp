@@ -209,6 +209,17 @@ HttpResponse HttpServer::handle_static_file(const HttpRequest& request) const {
 //----------------------------------------
 //
 //----------------------------------------
+void HttpServer::debug_routes() const {
+  std::cout << "\n=== Registered Routes ===" << std::endl;
+  for (const auto& [route, handler] : routes_) {
+    std::cout << "  " << route << std::endl;
+  }
+  std::cout << "========================\n" << std::endl;
+}
+
+//----------------------------------------
+//
+//----------------------------------------
 void HttpServer::handle_client(std::unique_ptr<Remote> client) {
   try {
     std::string raw_request = client->recvuntil("\r\n\r\n");
@@ -239,7 +250,9 @@ void HttpServer::handle_client(std::unique_ptr<Remote> client) {
     bool should_continue = true;
     for(const auto& middleware : middlewares_) {
       should_continue = middleware(request, response);
-      if(not should_continue) break;
+      if(not should_continue) {
+        break;
+      }
     }
 
     if(should_continue) {
@@ -250,25 +263,19 @@ void HttpServer::handle_client(std::unique_ptr<Remote> client) {
       if(route_it != routes_.end()) {
         response = route_it->second(request);
       } else {
-        // Try static file serving
-        response = handle_static_file(request);
-
-        // If still not found, return 404
-        if(response.status_code == 404 && !routes_.empty()) {
-          // Check if 404 handler exists
-          auto not_found = routes_.find("GET /404");
-          if(not_found != routes_.end()) {
-            response = not_found->second(request);
-          } else {
-            response.set_status(404)
-                    .set_html("<html><body><h1>404 Not Found</h1></body></html>");
-          }
+        // Only try static files for GET
+        if (request.method == "GET") {
+          response = handle_static_file(request);
+        } else {
+          response.set_status(404).set_json(R"({"error":"Route not found"})");
         }
       }
     }
 
     // Send response
-    client->send(response.to_string());
+    std::string response_str = response.to_string();
+
+    client->send(response_str);
     client->close();
   } catch (const std::exception& e) {
     std::cerr << "Error handling client: " << e.what() << "\n";

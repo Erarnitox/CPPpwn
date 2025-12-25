@@ -353,6 +353,25 @@ class TlsSocketImpl : public Remote::SocketImpl {
 //----------------------------------------
 //
 //----------------------------------------
+void Remote::fill_buffer() {
+  char tmp[4096];
+  asio::error_code ec;
+
+  std::size_t n = socket_->read_some(tmp, sizeof(tmp), ec);
+
+  if (ec == asio::error::eof) {
+    return;
+  }
+  if (ec) {
+    throw std::runtime_error("read failed: " + ec.message());
+  }
+
+  buffer_.append(tmp, n);
+}
+
+//----------------------------------------
+//
+//----------------------------------------
 Remote::Remote(const std::string& host, uint16_t port)
   : io_(), socket_(nullptr) {
 
@@ -497,26 +516,38 @@ void Remote::sendline(const std::string& data) {
 //
 //----------------------------------------
 std::string Remote::recv(std::size_t size) {
-  if(not socket_) {
-    throw std::runtime_error("No socket available!");
+  if (not socket_ || not socket_->is_open()) {
+    throw std::runtime_error("socket closed");
   }
 
-  std::vector<char> buf(size);
-  size_t len = socket_->read(buf.data(), size);
-  return std::string(buf.begin(), buf.begin() + len);
+  if (buffer_.empty()) {
+    fill_buffer();
+  }
+
+  std::size_t n = std::min(size, buffer_.size());
+  std::string out = buffer_.substr(0, n);
+  buffer_.erase(0, n);
+  return out;
 }
 
 //----------------------------------------
 //
 //----------------------------------------
 std::string Remote::recvuntil(const std::string& delim) {
-  if(not socket_) {
-    throw std::runtime_error("No socket available!");
+  if (not socket_ || not socket_->is_open()) {
+    throw std::runtime_error("socket closed");
   }
 
-  asio::streambuf buf;
-  socket_->read_until(buf, delim);
-  return std::string(asio::buffers_begin(buf.data()), asio::buffers_end(buf.data()));
+  while (true) {
+    auto pos = buffer_.find(delim);
+    if (pos != std::string::npos) {
+      pos += delim.size();
+      std::string out = buffer_.substr(0, pos);
+      buffer_.erase(0, pos);
+      return out;
+    }
+    fill_buffer();
+  }
 }
 
 //----------------------------------------
@@ -582,19 +613,18 @@ std::string Remote::recvline() {
 //
 //----------------------------------------
 std::string Remote::recvall() {
-  std::string result;
-  std::array<char, 4096> buf;
-  asio::error_code ec;
+  std::string out;
 
-  while(true) {
-    size_t len = socket_->read_some(buf.data(), buf.size(), ec);
-
-    if(ec == asio::error::eof || ec == asio::error::connection_reset) break;
-    if(ec) throw std::runtime_error("recvall failed: " + ec.message());
-
-    result.append(buf.data(), len);
+  while (socket_ && socket_->is_open()) {
+    try {
+      fill_buffer();
+      out.append(std::move(buffer_));
+      buffer_.clear();
+    } catch (...) {
+      break;
+    }
   }
-  return result;
+  return out;
 }
 
 //----------------------------------------
