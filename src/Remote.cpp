@@ -389,18 +389,24 @@ Remote::Remote(const std::string& host, uint16_t port)
 Remote::Remote(const std::string& host, uint16_t port, bool use_tls, bool verify_certificate)
   : io_(), socket_(nullptr) {
 
+  asio::error_code ec;
+  asio::ip::tcp::resolver resolver(io_);
+
+  auto endpoints = resolver.resolve(host, std::to_string(port), ec);
+  if (ec) {
+    throw std::runtime_error("Connection failed: DNS resolution");
+  }
+
   if(not use_tls) {
     asio::ip::tcp::socket socket(io_);
-    asio::ip::tcp::resolver resolver(io_);
-    auto endpoints = resolver.resolve(host, std::to_string(port));
     asio::connect(socket, endpoints);
     socket_ = std::make_unique<TcpSocketImpl>(std::move(socket));
     return;
   }
 
-  asio::ssl::context ssl_ctx(asio::ssl::context::tlsv12_client);
+  asio::ssl::context ssl_ctx(asio::ssl::context::tls_client);
 
-  if(verify_certificate) {
+  if (verify_certificate) {
     ssl_ctx.set_default_verify_paths();
     ssl_ctx.set_verify_mode(asio::ssl::verify_peer);
   } else {
@@ -409,16 +415,20 @@ Remote::Remote(const std::string& host, uint16_t port, bool use_tls, bool verify
 
   asio::ssl::stream<asio::ip::tcp::socket> ssl_socket(io_, ssl_ctx);
 
-  if(not SSL_set_tlsext_host_name(ssl_socket.native_handle(), host.c_str())) {
-    throw std::runtime_error("Failed to set SNI hostname");
+  if (not SSL_set_tlsext_host_name(ssl_socket.native_handle(), host.c_str())) {
+    throw std::runtime_error("Connection failed: SNI setup");
   }
 
-  // Connect to server
-  asio::ip::tcp::resolver resolver(io_);
-  auto endpoints = resolver.resolve(host, std::to_string(port));
-  asio::connect(ssl_socket.lowest_layer(), endpoints);
+  asio::connect(ssl_socket.lowest_layer(), endpoints, ec);
+  if (ec) {
+    throw std::runtime_error("Connection failed: TCP handshake layer");
+  }
 
-  ssl_socket.handshake(asio::ssl::stream_base::client);
+  ssl_socket.handshake(asio::ssl::stream_base::client, ec);
+  if (ec) {
+    throw std::runtime_error("Connection failed: TLS handshake (Cert Verification failed?)");
+  }
+
   socket_ = std::make_unique<TlsSocketImpl>(std::move(ssl_socket));
 }
 
