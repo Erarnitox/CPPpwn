@@ -21,7 +21,7 @@ public:
         auto points_value_buffer = this->readMemory(address, sizeof(T));
         return *reinterpret_cast<T*>(&(*points_value_buffer.begin()));
     }
-   
+
     template <typename T>
     void writeValue(const address_t address, const T& value) {
         const auto value_size{ sizeof(value) };
@@ -47,6 +47,7 @@ public:
     [[nodiscard]] std::string recvuntil(const std::string& delim) override;
     [[nodiscard]] std::string recvline() override;
     [[nodiscard]] std::string recvall() override;
+    [[nodiscard]] std::string recv_timeout(std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) override;
 
     [[nodiscard]] bool is_alive() const noexcept override;
     void close() override;

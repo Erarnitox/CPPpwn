@@ -203,6 +203,7 @@ class Remote::SocketImpl {
     virtual void close() = 0;
     virtual int native_handle() = 0;
     virtual ~SocketImpl() = default;
+    virtual bool can_read() const = 0;
 };
 
 //----------------------------------------
@@ -256,6 +257,13 @@ class TcpSocketImpl : public Remote::SocketImpl {
     //----------------------------------------
     bool is_tls() const override {
       return false;
+    }
+
+    //----------------------------------------
+    //
+    //----------------------------------------
+    bool can_read() const override {
+      return socket_.available() > 0;
     }
 
     //----------------------------------------
@@ -334,6 +342,13 @@ class TlsSocketImpl : public Remote::SocketImpl {
     //----------------------------------------
     //
     //----------------------------------------
+    bool can_read() const override {
+      return socket_.lowest_layer().available() > 0;
+    }
+
+    //----------------------------------------
+    //
+    //----------------------------------------
     void close() override {
       asio::error_code ec;
       socket_.lowest_layer().close(ec);
@@ -349,6 +364,25 @@ class TlsSocketImpl : public Remote::SocketImpl {
   private:
     asio::ssl::stream<asio::ip::tcp::socket> socket_;
 };
+
+//----------------------------------------
+//
+//----------------------------------------
+std::string Remote::recv_timeout(std::chrono::milliseconds timeout) {
+    auto start = std::chrono::steady_clock::now();
+
+    while (std::chrono::steady_clock::now() - start < timeout) {
+        if (socket_->can_read()) {
+            fill_buffer();
+            start = std::chrono::steady_clock::now();
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    std::string result = std::move(buffer_);
+    buffer_.clear();
+    return result;
+}
 
 //----------------------------------------
 //

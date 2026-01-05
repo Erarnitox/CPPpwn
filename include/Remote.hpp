@@ -33,6 +33,7 @@ public:
     [[nodiscard]] std::string recvuntil(const std::string& delim) override;
     [[nodiscard]] std::string recvline() override;
     [[nodiscard]] std::string recvall() override;
+    [[nodiscard]] std::string recv_timeout(std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) override;
 
     [[nodiscard]] bool is_alive() const noexcept override;
     void close() override;

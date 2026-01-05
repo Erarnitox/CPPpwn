@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <cstddef>
 
@@ -16,11 +17,12 @@ public:
     [[nodiscard]] virtual std::string recvuntil(const std::string& delim) = 0;
     [[nodiscard]] virtual std::string recvline() = 0;
     [[nodiscard]] virtual std::string recvall() = 0;
-
+    [[nodiscard]] virtual std::string recv_timeout(std::chrono::milliseconds timeout) = 0;
     [[nodiscard]] virtual int getInputStream() noexcept = 0;
     [[nodiscard]] virtual int getOutputStream() noexcept = 0;
 
     [[nodiscard]] virtual bool is_alive() const noexcept = 0;
+
     virtual void close() = 0;
 
     virtual void interactive() = 0;
