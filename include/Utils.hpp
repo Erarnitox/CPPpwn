@@ -13,8 +13,7 @@
 //----------------------------------------
 //
 //----------------------------------------
-inline constexpr
-std::string base64_encode(const std::string& input) {
+inline std::string base64_encode(const std::string& input) {
   static constexpr char base64_chars[]{ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" };
 
   std::string result;
@@ -45,8 +44,7 @@ std::string base64_encode(const std::string& input) {
 //----------------------------------------
 //
 //----------------------------------------
-inline constexpr
-std::string base64_decode(const std::string& encoded) {
+inline std::string base64_decode(const std::string& encoded) {
     static constexpr unsigned char decode_table[256] {
         64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
         64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
@@ -86,8 +84,7 @@ std::string base64_decode(const std::string& encoded) {
 //----------------------------------------
 //
 //----------------------------------------
-inline constexpr
-std::string url_encode(const std::string& value) {
+inline std::string url_encode(const std::string& value) {
   std::ostringstream escaped;
   escaped.fill('0');
   escaped << std::hex;
@@ -105,8 +102,7 @@ std::string url_encode(const std::string& value) {
 //----------------------------------------
 //
 //----------------------------------------
-inline constexpr
-std::string url_decode(const std::string& str) {
+inline std::string url_decode(const std::string& str) {
   std::string result;
   result.reserve(str.size());
 
