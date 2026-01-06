@@ -13,8 +13,7 @@ using Middleware = std::function<bool(const HttpRequest&, HttpResponse&)>;
 //----------------------------------------
 //
 //----------------------------------------
-inline constexpr
-std::map<std::string, std::string> parse_query_string(const std::string& query) {
+inline std::map<std::string, std::string> parse_query_string(const std::string& query) {
   std::map<std::string, std::string> params;
 
   std::istringstream stream(query);
@@ -36,8 +35,7 @@ std::map<std::string, std::string> parse_query_string(const std::string& query) 
 //----------------------------------------
 //
 //----------------------------------------
-inline constexpr
-std::map<std::string, std::string> parse_cookies(const std::string& cookie_header) {
+inline std::map<std::string, std::string> parse_cookies(const std::string& cookie_header) {
   std::map<std::string, std::string> cookies;
 
   std::istringstream stream(cookie_header);
@@ -60,8 +58,7 @@ std::map<std::string, std::string> parse_cookies(const std::string& cookie_heade
 //----------------------------------------
 //
 //----------------------------------------
-inline constexpr
-std::string get_mime_type(const std::string& path) {
+inline std::string get_mime_type(const std::string& path) {
   static const std::map<std::string, std::string> mime_types = {
     {".html", "text/html"},
     {".htm", "text/html"},
@@ -97,8 +94,7 @@ std::string get_mime_type(const std::string& path) {
 //----------------------------------------
 //
 //----------------------------------------
-inline constexpr
-std::string get_http_date() {
+inline std::string get_http_date() {
   auto now = std::chrono::system_clock::now();
   std::time_t now_c = std::chrono::system_clock::to_time_t(now);
   std::tm gmt;
