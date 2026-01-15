@@ -3,30 +3,31 @@ project(cpppwn VERSION 0.0.1 LANGUAGES CXX)
 
 option(CPPPWN_BUILD_EXAMPLE "Build the example program" OFF)
 
-add_library(cpppwn
-    src/Remote.cpp
-    src/Process.cpp
-    src/Server.cpp
-    src/Shell.cpp
-    src/HttpClient.cpp
-    src/HttpServer.cpp
-    src/HttpUtils.cpp
-    src/RESTClient.cpp
-    src/RESTServer.cpp
-    src/Pattern.cpp
-    
+add_library(cpppwn STATIC
+    "src/Remote.cpp"
+    "src/Process.cpp"
+    "src/Server.cpp"
+    "src/Shell.cpp"
+    "src/HttpClient.cpp"
+    "src/HttpServer.cpp"
+    "src/HttpUtils.cpp"
+    "src/RESTClient.cpp"
+    "src/RESTServer.cpp"
+    "src/Pattern.cpp"
+
     # includes for some IDEs
-    include/Remote.hpp
-    include/Process.hpp
-    include/Server.hpp
-    include/Shell.hpp
-    include/HttpClient.hpp
-    include/HttpServer.hpp
-    include/HttpUtils.hpp
-    include/RESTClient.hpp
-    include/RESTServer.hpp
-    include/Pattern.hpp
+    "include/Remote.hpp"
+    "include/Process.hpp"
+    "include/Server.hpp"
+    "include/Shell.hpp"
+    "include/HttpClient.hpp"
+    "include/HttpServer.hpp"
+    "include/HttpUtils.hpp"
+    "include/RESTClient.hpp"
+    "include/RESTServer.hpp"
+    "include/cpppwn.hpp"
 )
+add_library(cpppwn::cpppwn ALIAS cpppwn)
 
 target_compile_features(cpppwn PUBLIC cxx_std_23)
 
@@ -55,12 +56,6 @@ find_package(OpenSSL REQUIRED)
 # ---------------------------------------------------------
 CPMAddPackage("gh:chriskohlhoff/asio#asio-1-36-0@1.36.0")
 
-CPMAddPackage(
-  NAME glaze
-  GITHUB_REPOSITORY stephenberry/glaze
-  GIT_TAG v6.1.0
-)
-
 # Create a clean Asio target ourselves to avoid leaking paths
 add_library(asio INTERFACE)
 
@@ -80,9 +75,38 @@ target_link_libraries(asio INTERFACE
   OpenSSL::Crypto
 )
 
-target_link_libraries(cpppwn PRIVATE asio)
-target_link_libraries(cpppwn PUBLIC glaze::glaze)
-target_link_libraries(cpppwn PUBLIC ${CMAKE_DL_LIBS})
+CPMAddPackage(
+  NAME glaze
+  GITHUB_REPOSITORY stephenberry/glaze
+  GIT_TAG v6.1.0
+)
+
+CPMAddPackage(
+    NAME curl
+    GITHUB_REPOSITORY curl/curl
+    GIT_TAG curl-8_17_0
+    OPTIONS
+        "CURL_USE_OPENSSL ON"
+        "CMAKE_USE_LIBSSH2 OFF" # maybe useful for reverse shells and other traffic tunneling tricks later
+        "BUILD_CURL_EXE OFF"
+        "CURL_ZLIB ON"
+        "BUILD_SHARED_LIBS OFF"
+        "BUILD_STATIC_LIBS ON"
+)
+
+# -------------------------------------
+# Link libraries (order matters!)
+# -------------------------------------
+# Changed from PRIVATE to PUBLIC for transitive dependencies
+target_link_libraries(cpppwn PUBLIC
+    asio
+    CURL::libcurl
+    glaze::glaze
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    Threads::Threads
+    ${CMAKE_DL_LIBS}
+)
 
 # -------------------------------------
 # Public include interface
@@ -97,7 +121,19 @@ target_include_directories(cpppwn
 # Export header generation
 # -------------------------------------
 include(GenerateExportHeader)
-generate_export_header(cpppwn)
+generate_export_header(cpppwn
+    EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/cpppwn_export.h
+)
+
+# Install the generated export header
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/cpppwn_export.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+target_include_directories(cpppwn PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 install(
     TARGETS cpppwn asio
@@ -145,10 +181,8 @@ install(
 )
 
 # -------------------------------------
-# Optional example program
+# Optional example programs
 # -------------------------------------
 if (CPPPWN_BUILD_EXAMPLE)
-    add_executable(example example/main.cpp)
-    target_link_libraries(example PRIVATE cpppwn)
+  add_subdirectory(example)
 endif()
-

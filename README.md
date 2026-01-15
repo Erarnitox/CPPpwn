@@ -51,10 +51,7 @@ target_link_libraries(your_executable PRIVATE cpppwn::cpppwn)
 
 ## Quick Start
 ```cpp
-#include <cpppwn/Remote.hpp>
-#include <cpppwn/Process.hpp>
-#include <cppwn/HttpClient.hpp>
-
+#include <cpppwn.hpp>
 #include <print>
 
 int main() {

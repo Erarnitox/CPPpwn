@@ -13,11 +13,11 @@ public:
 
     explicit Remote(const std::string& host, uint16_t port);
 
-    explicit Remote(const std::string& host, uint16_t port, 
+    explicit Remote(const std::string& host, uint16_t port,
         bool use_tls, bool verify_certificate = false
     );
 
-    explicit Remote(const std::string& host, uint16_t port, 
+    explicit Remote(const std::string& host, uint16_t port,
         const std::string& proxy, bool use_tls = false);
 
     explicit Remote(const std::string& host, uint16_t port,
@@ -33,6 +33,7 @@ public:
     [[nodiscard]] std::string recvuntil(const std::string& delim) override;
     [[nodiscard]] std::string recvline() override;
     [[nodiscard]] std::string recvall() override;
+    [[nodiscard]] std::string recv_timeout(std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) override;
 
     [[nodiscard]] bool is_alive() const noexcept override;
     void close() override;
@@ -50,7 +51,10 @@ public:
     Remote& operator=(const Remote&) = delete;
 
 private:
+    void fill_buffer();
     asio::io_context io_;
+    asio::streambuf recv_buffer_;
     std::unique_ptr<SocketImpl> socket_;
+    std::string buffer_;
 };
-} 
+}
