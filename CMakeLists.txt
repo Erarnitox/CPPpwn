@@ -25,6 +25,7 @@ add_library(cpppwn STATIC
     "include/HttpUtils.hpp"
     "include/RESTClient.hpp"
     "include/RESTServer.hpp"
+    "include/Pattern.hpp"
     "include/cpppwn.hpp"
 )
 add_library(cpppwn::cpppwn ALIAS cpppwn)
