@@ -2,38 +2,28 @@
 #include <algorithm>
 #include "Pattern.hpp"
 
-namespace cpppwn
-{
+namespace cpppwn {
     // Internal helper for De Bruijn sequence generation
-    static void generateDb(int t, int p, std::vector<int> const& alphabet, std::vector<int>& a, std::vector<int>& sequence)
-    {
-        if (t > p)
-        {
-            if (p % t == 0)
-            {
-                for (int j = 1; j <= p; ++j)
-                {
+    static void generateDb(int t, int p, std::vector<int> const& alphabet, std::vector<int>& a, std::vector<int>& sequence) {
+        if (t > p) {
+            if (p % t == 0) {
+                for (int j = 1; j <= p; ++j) {
                     sequence.push_back(a[j]);
                 }
             }
-        }
-        else
-        {
-            a[t] = a[t - p];
+        } else {
+            a[t] = a[t-p];
             generateDb(t + 1, p, alphabet, a, sequence);
-            for (int j = a[t - p] + 1; j < (int)alphabet.size(); ++j)
-            {
+            for (int j = a[t-p] + 1; j < (int)alphabet.size(); ++j) {
                 a[t] = j;
                 generateDb(t + 1, t, alphabet, a, sequence);
             }
         }
     }
 
-    std::string cyclic(size_t length, size_t period)
-    {
+    std::string cyclic(size_t length, size_t period) {
         std::vector<int> alphabet;
-        for (int i = 0; i < 26; ++i)
-        {
+        for (int i = 0; i < 26; ++i) {
             alphabet.push_back('a' + i);
         }
 
@@ -45,13 +35,10 @@ namespace cpppwn
         std::string result;
         result.reserve(length);
 
-        while (result.size() < length)
-        {
-            for (int val : sequence)
-            {
+        while (result.size() < length) {
+            for (int val : sequence) {
                 result += (char)val;
-                if (result.size() >= length)
-                {
+                if (result.size() >= length) {
                     break;
                 }
             }
@@ -60,21 +47,17 @@ namespace cpppwn
         return result;
     }
 
-    int cyclicFind(std::string const& subPattern, size_t period)
-    {
-        
+    int cyclicFind(std::string const& subPattern, size_t period) {
         std::string haystack = cyclic(20000, period);
 
         size_t pos = haystack.find(subPattern);
-        if (pos != std::string::npos)
-        {
+        if (pos != std::string::npos) {
             return static_cast<int>(pos);
         }
         return -1;
     }
 
-    int cyclicFind(uint32_t value, size_t period)
-    {
+    int cyclicFind(uint32_t value, size_t period) {
         std::string s;
         // Handle value as little-endian string
         s.push_back(static_cast<char>(value & 0xFF));
