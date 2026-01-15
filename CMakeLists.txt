@@ -13,6 +13,7 @@ add_library(cpppwn STATIC
     "src/HttpUtils.cpp"
     "src/RESTClient.cpp"
     "src/RESTServer.cpp"
+    "src/Pattern.cpp"
 
     # includes for some IDEs
     "include/Remote.hpp"
