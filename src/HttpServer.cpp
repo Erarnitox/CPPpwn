@@ -244,6 +244,7 @@ void HttpServer::handle_client(std::unique_ptr<Remote> client) {
 
     // Parse request
     HttpRequest request = parse_request(raw_request);
+    request.ip_address = client->remote_address();
     HttpResponse response;
 
     // Apply middlewares

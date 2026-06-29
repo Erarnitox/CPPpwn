@@ -38,6 +38,8 @@ public:
     [[nodiscard]] bool is_alive() const noexcept override;
     void close() override;
 
+    [[nodiscard]] std::string remote_address() const;
+
     [[nodiscard]] int getInputStream() noexcept override;
     [[nodiscard]] int getOutputStream() noexcept override;
 

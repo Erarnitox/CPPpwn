@@ -202,6 +202,7 @@ class Remote::SocketImpl {
     virtual bool is_tls() const = 0;
     virtual void close() = 0;
     virtual int native_handle() = 0;
+    [[nodiscard]] virtual std::string remote_address() const = 0;
     virtual ~SocketImpl() = default;
     virtual bool can_read() const = 0;
 };
@@ -272,6 +273,17 @@ class TcpSocketImpl : public Remote::SocketImpl {
     void close() override {
       asio::error_code ec;
       socket_.close(ec);
+    }
+
+    //----------------------------------------
+    //
+    //----------------------------------------
+    [[nodiscard]] std::string remote_address() const override {
+      try {
+        return socket_.remote_endpoint().address().to_string();
+      } catch (const std::exception&) {
+        return "";
+      }
     }
 
     //----------------------------------------
@@ -352,6 +364,17 @@ class TlsSocketImpl : public Remote::SocketImpl {
     void close() override {
       asio::error_code ec;
       socket_.lowest_layer().close(ec);
+    }
+
+    //----------------------------------------
+    //
+    //----------------------------------------
+    [[nodiscard]] std::string remote_address() const override {
+      try {
+        return socket_.lowest_layer().remote_endpoint().address().to_string();
+      } catch (const std::exception&) {
+        return "";
+      }
     }
 
     //----------------------------------------
@@ -599,6 +622,17 @@ std::string Remote::recvuntil(const std::string& delim) {
 //----------------------------------------
 bool Remote::is_alive() const noexcept {
     return socket_ && socket_->is_open();
+}
+
+//----------------------------------------
+//
+//----------------------------------------
+std::string Remote::remote_address() const {
+  if (!socket_) {
+    return "";
+  }
+
+  return socket_->remote_address();
 }
 
 //----------------------------------------

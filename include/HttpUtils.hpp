@@ -118,6 +118,7 @@ struct HttpRequest {
   std::map<std::string, std::string> cookies;      // Parsed cookies
   std::map<std::string, std::string> form_data;    // Parsed form data
   std::string body;                                // Raw request body
+  std::string ip_address;                          // Client IP from the socket connection
 
   [[nodiscard]] std::string get_header(const std::string& name) const;
 
